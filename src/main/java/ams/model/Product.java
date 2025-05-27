@@ -31,11 +31,11 @@ public class Product {
     private String description;
     private Double price;
     private Integer quantity;
-    private String imageurl;
+    private String imageUrl;
     
     @ManyToOne
     @JoinColumn(name="farmer_id")
-    @JsonIgnoreProperties("produts")
+    @JsonIgnoreProperties("products")
     private Farmer farmer;
     
     @OneToMany(mappedBy="product",cascade=CascadeType.ALL)

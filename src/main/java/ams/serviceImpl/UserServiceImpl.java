@@ -5,37 +5,32 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ams.model.Cart;
+import ams.DTO.UserDTO;
 import ams.model.User;
 //import ams.repository.CartRepository;
 import ams.repository.UserRepository;
-import ams.service.UserService;
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl {
 	
 	@Autowired
-	private UserRepository userrepository;
-//	@Autowired
-//	private CartRepository cartrepository;
+	private UserRepository userRepository;
 
-	@Override
+
+	
 	public User registerUser(User user) {
 		
-		Cart cart= new Cart();
-		cart.setUser(user);
-		user.setCart(cart);
-		return userrepository.save(user);
+		return userRepository.save(user);
 	}
 
-	@Override
-	public Optional<User> getUserByEmail(String email) {
+	
+	public Optional<UserDTO> getUserByEmail(String email) {
 		
-		return userrepository.findByEmail(email);
+		return userRepository.findByEmail(email);
 	}
 
-	@Override
+
 	public Optional<User> getUserById(Long Id) {
-		return userrepository.findById(Id);
+		return userRepository.findById(Id);
 	}
 
 }

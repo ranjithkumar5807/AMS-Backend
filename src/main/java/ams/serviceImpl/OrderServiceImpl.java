@@ -7,67 +7,96 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ams.model.Cart;
+import ams.DTO.OrderDTO;
+import ams.DTO.OrderItemDTO;
 import ams.model.CartItem;
 import ams.model.Order;
 import ams.model.OrderItem;
+import ams.model.Product;
 import ams.model.User;
 import ams.repository.CartItemRepository;
-import ams.repository.CartRepository;
 import ams.repository.OrderItemRepository;
 import ams.repository.OrderRepository;
-import ams.service.OrderService;
+import ams.repository.ProductRepository;
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl {
 	
 	@Autowired
 	private OrderItemRepository orderItemRepository;
 	@Autowired
 	private OrderRepository orderRepository;
 	@Autowired
-	private CartRepository cartRepository;
-	@Autowired
 	private CartItemRepository cartItemRepository;
+	@Autowired
+	private ProductRepository productRepository;
 
-	@Override
+	
 	public Order placeOrder(User user) {
-		Cart cart=user.getCart();
-		List<CartItem> cartItems=cart.getCartitems();
 		
-		Order order=new Order();
+		List<CartItem> cartItems=cartItemRepository.findByCartId(user.getId());
+		if (cartItems.isEmpty()) {
+            throw new RuntimeException("Cart is empty. Cannot place order.");
+        }
+		
+		Order order = new Order();
 		order.setStatus("PENDING");
 		order.setUser(user);
 		order.setOrderDate(LocalDate.now());
-		
-		double total=0;
-		List<OrderItem> orderItems= new ArrayList<>();
-		for(CartItem item: cartItems) {
-			OrderItem orderItem=new OrderItem();
+
+		double total = 0;
+		List<OrderItem> orderItems = new ArrayList<>();
+
+		for (CartItem item : cartItems) {
+			Product product = item.getProduct();
+
+			if (product.getQuantity() < item.getQuantity()) {
+				throw new RuntimeException("Not enough stock for product: " + product.getName());
+			}
+
+			// Update stock
+			product.setQuantity(product.getQuantity() - item.getQuantity());
+			productRepository.save(product);
+
+			OrderItem orderItem = new OrderItem();
 			orderItem.setOrder(order);
-			orderItem.setProduct(item.getProduct());
+			orderItem.setProduct(product);
 			orderItem.setQuantity(item.getQuantity());
-			orderItem.setPrice(item.getPrice());
+			orderItem.setPrice(product.getPrice()*item.getQuantity());
+
 			orderItems.add(orderItem);
-			total+=item.getPrice();
+			total += orderItem.getPrice();
 		}
+
 		order.setTotalPrice(total);
 		order.setOrderItems(orderItems);
-		Order savedOrder =orderRepository.save(order);
-		cartItemRepository.deleteAll(cartItems);
-		
-		return savedOrder;
-		
-	}
 
-	@Override
+		Order savedOrder = orderRepository.save(order);
+		orderItemRepository.saveAll(orderItems);
+		cartItemRepository.deleteAll(cartItems);
+
+		return savedOrder;
+}
+
+	
 	public List<Order> getUserOrders(Long userId) {
 		return orderRepository.findByUserId(userId);
 		
 	}
 
-	@Override
+	
 	public List<OrderItem> getOrderItems(Long orderId) {
 		return orderItemRepository.findByOrderId(orderId);
 	}
+
+	public List<OrderDTO> getOrdersByUserId(Long userId) {
+        List<OrderDTO> orders = orderRepository.findOrdersByUserId(userId);
+
+        for (OrderDTO order : orders) {
+            List<OrderItemDTO> items = orderItemRepository.findOrderItemsByOrderId(order.getId());
+            order.setOrderItems(items);
+        }
+
+        return orders;
+    }
 
 }

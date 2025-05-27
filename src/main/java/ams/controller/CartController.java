@@ -14,19 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 import ams.model.CartItem;
 import ams.model.Product;
 import ams.model.User;
-import ams.service.CartService;
-import ams.service.ProductService;
-import ams.service.UserService;
+import ams.serviceImpl.CartServiceImpl;
+import ams.serviceImpl.ProductServiceImpl;
+import ams.serviceImpl.UserServiceImpl;
+
 
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
 	@Autowired
-    private CartService cartService;
+    private CartServiceImpl cartService;
 	@Autowired
-    private  UserService userService;
+    private  UserServiceImpl userService;
 	@Autowired
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @PostMapping("/add")
     public ResponseEntity<String> addToCart(@RequestParam Long userId,

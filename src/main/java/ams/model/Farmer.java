@@ -29,7 +29,7 @@ public class Farmer {
 	private String email;
 	private String password;
 	private String phone;
-	private String location;
+	private String address;
 	
 	@OneToMany(mappedBy="farmer",cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("farmer")
