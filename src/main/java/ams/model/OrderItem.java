@@ -2,6 +2,8 @@ package ams.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,10 +30,12 @@ public class OrderItem {
 	
 	@ManyToOne
 	@JoinColumn(name="order_id")
+	@JsonIgnoreProperties("orderItems")
 	private Order order;
 	
 	@ManyToOne
 	@JoinColumn(name="product_id")
+	@JsonIgnoreProperties("orderItems")
 	private Product product;
 
 }

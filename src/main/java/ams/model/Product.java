@@ -1,11 +1,17 @@
 package ams.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +35,17 @@ public class Product {
     
     @ManyToOne
     @JoinColumn(name="farmer_id")
+    @JsonIgnoreProperties("produts")
     private Farmer farmer;
+    
+    @OneToMany(mappedBy="product",cascade=CascadeType.ALL)
+    @JsonIgnoreProperties("product")
+    private List<CartItem> cartItems;
+    
+    @OneToMany(mappedBy="product",cascade=CascadeType.ALL)
+    @JsonIgnoreProperties("product")
+    private List<OrderItem> orderItems;
+    
+    
 
 }

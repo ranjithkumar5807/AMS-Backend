@@ -3,6 +3,8 @@ package ams.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name="order")
+@Table(name="orders")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
@@ -33,9 +35,11 @@ public class Order {
 	
 	@ManyToOne
 	@JoinColumn(name="user_id")
+	@JsonIgnoreProperties("orders")
 	private User user;
 	
 	@OneToMany(mappedBy = "order",cascade=CascadeType.ALL)
+	@JsonIgnoreProperties("order")
 	private List<OrderItem> orderItems;
 
 }

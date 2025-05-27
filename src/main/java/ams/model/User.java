@@ -2,6 +2,8 @@ package ams.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,12 +31,14 @@ public class User {
 	private String email;
 	private String password;
 	private String phone;
-	private String location;
+	private String address;
 	
-	@OneToOne(mappedBy="user",cascade=CascadeType.ALL)
-	private Cart cart;
+	@OneToMany(mappedBy="user",cascade = CascadeType.ALL)
+	@JsonIgnoreProperties("user")
+	private List<CartItem> cartitems;
 	
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL)
+	@JsonIgnoreProperties("user")
 	private List<Order> orders;
 	
 	

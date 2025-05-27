@@ -1,5 +1,7 @@
 package ams.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 //import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -23,14 +25,16 @@ public class CartItem {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private Integer quantity;
-	private Double price;
+//	private Double price;
 	
 	@ManyToOne
-	@JoinColumn(name="cart_id")
-	private Cart cart;
+	@JoinColumn(name="user_id")
+	@JsonIgnoreProperties("cartItems")
+	private User user;
 	
 	@ManyToOne
 	@JoinColumn(name="product_id")
+	@JsonIgnoreProperties("cartItems")
 	private Product product;
 	
 
